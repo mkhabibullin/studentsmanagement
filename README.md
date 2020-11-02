@@ -1,5 +1,8 @@
 # How to
 
+## 0 Prerequisites
+there has been used .Net core 3.1, so make sure you have at least the run time version - https://dotnet.microsoft.com/download/dotnet-core/3.1
+
 ## 1. How to run
 ### dotnetn --project ./SM.API/SM.API.csproj --configuration Release
 or
