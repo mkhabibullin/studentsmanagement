@@ -8,6 +8,7 @@ there has been used .Net core 3.1, so make sure you have at least the run time v
 or
 ### docker
 docker build -t aspnetapp .
+
 docker run -it --rm -p 5000:80 --name aspnetcore_sample aspnetapp
 
 ## 2. Go to Swagger page http://localhost:5000/api
