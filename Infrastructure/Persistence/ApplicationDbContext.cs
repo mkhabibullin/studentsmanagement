@@ -20,7 +20,7 @@ namespace SM.Infrastructure.Persistence
         private readonly ICurrentUserService _currentUserService;
 
         public ApplicationDbContext(
-            DbContextOptions options,
+            DbContextOptions<ApplicationDbContext> options,
             ICurrentUserService currentUserService) : base(options)
         {
             _currentUserService = currentUserService;

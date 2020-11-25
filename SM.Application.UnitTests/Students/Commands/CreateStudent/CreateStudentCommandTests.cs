@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using Moq;
+using Shouldly;
 using SM.Application.Students.Commands.CreateStudent;
 using SM.Domain.Enums;
 using System.Threading;
@@ -19,7 +20,9 @@ namespace SM.Application.UnitTests.Students.Commands.CreateStudent
                 Gender = Genders.Male
             };
 
-            var handler = new CreateStudentCommand.CreateStudentCommandHandler(Context);
+            var publishEndpoint = new Mock<MassTransit.IPublishEndpoint>();
+
+            var handler = new CreateStudentCommand.CreateStudentCommandHandler(Context, publishEndpoint.Object);
 
             var result = await handler.Handle(command, CancellationToken.None);
 

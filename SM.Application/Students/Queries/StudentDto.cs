@@ -20,7 +20,7 @@ namespace SM.Application.Students.Queries
         [Sieve(CanFilter = true, CanSort = true)]
         public Genders Gender { get; set; }
 
-        public IEnumerable<StudentGroupDto> Groups { get; set; }
+        public ICollection<StudentGroupDto> Groups { get; set; }
 
         public void Mapping(Profile profile)
         {

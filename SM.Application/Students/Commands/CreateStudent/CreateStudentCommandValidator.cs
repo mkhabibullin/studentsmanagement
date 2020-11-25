@@ -29,10 +29,10 @@ namespace SM.Application.Students.Commands.CreateStudent
             RuleFor(v => v.LastName != null ? v.LastName.Trim() : null)
                 .MaximumLength(60).WithMessage("Last name must not exceed 60 characters");
 
-            RuleFor(v => v.PublicId != null ? v.PublicId.Trim() : null)
-                .MinimumLength(6).WithMessage("Public ID must exceed 6 characters")
-                .MaximumLength(16).WithMessage("Public ID must not exceed 16 characters")
-                .MustAsync(BeUniquePublicId).WithMessage("The specified public ID already exists"); ;
+            //RuleFor(v => v.PublicId != null ? v.PublicId.Trim() : null)
+            //    .MinimumLength(6).WithMessage("Public ID must exceed 6 characters")
+            //    .MaximumLength(16).WithMessage("Public ID must not exceed 16 characters")
+            //    .MustAsync(BeUniquePublicId).WithMessage("The specified public ID already exists");
         }
 
         public async Task<bool> BeUniquePublicId(string publicId, CancellationToken cancellationToken)

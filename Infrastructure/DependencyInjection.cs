@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using MassTransit;
+using MassTransit.EntityFrameworkCoreIntegration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +11,11 @@ using Newtonsoft.Json;
 using SM.Application.Common.Interfaces;
 using SM.Application.Common.Models;
 using SM.Application.Common.Settings;
+using SM.Application.Saga.StudentRegistration;
 using SM.Infrastructure.Identity;
 using SM.Infrastructure.Persistence;
 using SM.Infrastructure.Services;
+using SM.Infrastructure.StatePersistence;
 using System;
 using System.Text;
 
@@ -22,7 +26,7 @@ namespace SM.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
+                options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection"),
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
@@ -71,20 +75,34 @@ namespace SM.Infrastructure
                             context.HandleResponse();
                             context.Response.StatusCode = 401;
                             context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(new Response<string>("You are not Authorized"));
+                            var result = JsonConvert.SerializeObject(new Application.Common.Models.Response<string>("You are not Authorized"));
                             return context.Response.WriteAsync(result);
                         },
                         OnForbidden = context =>
                         {
                             context.Response.StatusCode = 403;
                             context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(new Response<string>("You are not authorized to access this resource"));
+                            var result = JsonConvert.SerializeObject(new Application.Common.Models.Response<string>("You are not authorized to access this resource"));
                             return context.Response.WriteAsync(result);
                         },
                     };
                 });
 
             return services;
+        }
+
+        public static void AddStudentSaga(this IEntityFrameworkSagaRepositoryConfigurator<StudentRegistrationState> r, IConfiguration configuration)
+        {
+            r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires RowVersion
+
+            r.AddDbContext<SagaDbContext, StudentStateDbContext>((provider, builder) =>
+            {
+                builder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), m =>
+                {
+                    m.MigrationsAssembly(typeof(StudentStateDbContext).Assembly.FullName);
+                    m.MigrationsHistoryTable($"__{nameof(StudentStateDbContext)}");
+                });
+            });
         }
     }
 }
